@@ -1,9 +1,11 @@
 ## Description
-An [Chainer](http://chainer.org/) implementation of *A Neural Algorithm of Artistic Style*. In short, this is an algorithm that transfers the artistic style of one image onto another by uitlizing convolutional neural networks' ability to extract high-level image content.
+An [Chainer](http://chainer.org/) implementation of *A Neural Algorithm of Artistic Style*. In short, this is an algorithm that transfers the artistic style of one image onto another by utilizing  convolutional neural networks' ability to extract high-level image content.
 
 ## Detail
 ### Pre-trained model
-A VGG-19 Caffe model is required for this implmentation to work. You can use the normalized version used by the authors of the article: [`vgg_normalised.caffemodel`](http://bethgelab.org/deeptextures/), or use the original one made by VGG team: [`VGG_ILSVRC_19_layers.caffemodel`](https://gist.github.com/ksimonyan/3785162f95cd2d5fee77#file-readme-md).
+A VGG-19 Caffe model is required for this implementation  to work. You can use the normalized version used by the authors of the article: [`vgg_normalised.caffemodel`](http://bethgelab.org/deeptextures/), or use the original one made by VGG team: [`VGG_ILSVRC_19_layers.caffemodel`](https://gist.github.com/ksimonyan/3785162f95cd2d5fee77#file-readme-md).
+
+With minor modifications, other CNNs (NIN, GoogLeNet, etc.) can be used as well. See [jcjohnson's explanation](https://github.com/jcjohnson/neural-style) and [mattya's implementation](https://github.com/mattya/chainer-gogh/blob/master/models.py).
 
 ### Parameters
 A helper function `generate_image()` was created to help the transfer. The parameters it uses are:
@@ -15,7 +17,7 @@ A helper function `generate_image()` was created to help the transfer. The param
 * `optimizer`: String. Optimizer to use, you can choose between `adam` for ADAM and `rmsprop` for Alex Graves’s RMSprop.
 ..* `iteration`: Int, number of iterations to run.
 ..* `lr`: Float. Learning rate of the optimizer.
-* `contrast`:  
+* `contrast`: Boolean. Sometimes the output has less saturation than expected, so I insert few lines to give the contrast a kick when saving to file.
 
 
 ## Result
@@ -31,7 +33,7 @@ Leon A. Gatys, Alexander S. Ecker, Matthias Bethge, Aaron Hertzmann & Eli Shecht
 Gatys, Leon A., Ecker, Alexander S. & Bethge, Matthias (2016). [*Image Style Transfer Using Convolutional Neural Networks*](http://www.cv-foundation.org/openaccess/content_cvpr_2016/html/Gatys_Image_Style_Transfer_CVPR_2016_paper.html). In: *The IEEE Conference on Computer Vision and Pattern Recognition*, pp. 2414-2423.
 
 ## Acknowledgement
-In making this program, I referred to helpful work of 
+In making this program, I referred to helpful work of [jcjohnson](https://github.com/jcjohnson/neural-style), [apple2373](https://github.com/apple2373/chainer_stylenet), [mattya](https://github.com/mattya/chainer-gogh), and [andersbll](https://github.com/andersbll/neural_artistic_style).
  
 ## Author
 Francis Hsu, University of Illinois at Urbana–Champaign.
