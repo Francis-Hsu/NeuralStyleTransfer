@@ -1,8 +1,7 @@
 import numpy as np
 import scipy as sp
-from scipy import misc, ndimage
+from scipy import misc
 import time
-import copy
 
 from chainer import cuda, optimizers, Variable
 import chainer.functions as F
@@ -17,6 +16,7 @@ class VGG19:
     def __init__(self):
         print("Loading Model...")
         start_time = time.time()
+        # self.vgg = L.caffe.CaffeFunction('VGG_ILSVRC_19_layers.caffemodel')
         self.vgg = L.caffe.CaffeFunction('vgg_normalised.caffemodel')
         if gpu_flag:
             self.vgg.to_gpu()
@@ -373,7 +373,8 @@ def save_image(gen_rep, filename, contrast=False):
 
 
 def white_noise(orig_img):
-    gen_img = xp.random.normal(scale=40, size=orig_img.shape).astype(np.float32)
+    gen_img = xp.random.normal(size=orig_img.shape).astype(np.float32)
+    gen_img = 255.0 * normalize(gen_img) - 114.80
 
     return gen_img
 
@@ -415,7 +416,7 @@ def use_gpu(gpu=True):
 
 # helper function for synthesizing image
 def generate_image(cnn, content, style, alpha=80.0, beta=1000.0, color='none', lum_match=True, init_image='noise',
-                   optimizer='adam', iteration=2000, lr=0.1, save=50, filename='iter', contrast=False):
+                   optimizer='adam', iteration=2000, lr=0.1, save=50, prefix='iter', contrast=False):
     # load images
     content_img, style_img = load_images(content, style)
     content_img_chr = 0
@@ -484,9 +485,9 @@ def generate_image(cnn, content, style, alpha=80.0, beta=1000.0, color='none', l
 
     # choose optimizer
     if optimizer == 'adam':
-        art_nn.optimize_adam(x, iterations=iteration, alpha=lr, save=save, filename=filename, str_contrast=contrast)
+        art_nn.optimize_adam(x, iterations=iteration, alpha=lr, save=save, filename=prefix, str_contrast=contrast)
     elif optimizer == 'rmsprop':
-        art_nn.optimize_rmsprop(x, iterations=iteration, lr=lr, save=save, filename=filename, str_contrast=contrast)
+        art_nn.optimize_rmsprop(x, iterations=iteration, lr=lr, save=save, filename=prefix, str_contrast=contrast)
     else:
         return
 
@@ -496,11 +497,11 @@ def generate_image(cnn, content, style, alpha=80.0, beta=1000.0, color='none', l
 
 
 def main():
-    use_gpu(False)
+    use_gpu(True)
     cnn = VGG19()
 
-    generate_image(cnn, 'grainger2.jpg', 'starry_night_over_the_rhone.jpg', alpha=160.0, beta=10000.0,
-                   init_image='noise', optimizer='rmsprop', iteration=1000, lr=0.2, filename='star1', contrast=True)
+    generate_image(cnn, 'a.jpg', 'b.jpg', alpha=60, beta=10000,
+                   init_image='noise', optimizer='rmsprop', iteration=1600, lr=0.25, prefix='temp', contrast=True)
 
 
 if __name__ == "__main__":
