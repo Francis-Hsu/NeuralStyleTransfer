@@ -25,6 +25,21 @@ A helper function `generate_image()` was created to help the transfer. The param
 ## Result
 under construction ᕕ( ᐛ )ᕗ
 
+![grainger](Result/grainger2.jpg)
+![the_shipwreck_of_the_minotaur](Result/the_shipwreck_of_the_minotaur.png)
+![starry_night](Result/starry_night.png)
+![der_schrei](Result/der_schrei.png)
+![femme_nue_assise](Result/femme_nue_assise.png)
+![composition_VII](Result/composition_VII.png)
+![xishan_qingyuan](Result/xishan_qingyuan.png)
+![kanagawa-oki_nami_ura](Result/kanagawa-oki_nami_ura.png)
+
+### Color Preserving Transfer
+![starry_night_over_the_rhone](Result/starry_night_over_the_rhone.png)
+![histogram](Result/color_histogram.png)
+![luminance](Result/color_luminance.png)
+
+
 ## Reference
 Leon A. Gatys, S. Ecker & Matthias Bethge (2015). [*A Neural Algorithm of Artistic Style*](http://arxiv.org/abs/1508.06576). In: *CoRR*.
 
