@@ -14,9 +14,11 @@ A helper function `generate_image()` was created to help the transfer. The param
 * `alpha`, `beta`:
 * `color`: 
 * `init_image`:
-* `optimizer`: String. Optimizer to use, you can choose between `adam` for ADAM and `rmsprop` for Alex Graves’s RMSprop.
-..* `iteration`: Int, number of iterations to run.
-..* `lr`: Float. Learning rate of the optimizer.
+* `optimizer`: String. Optimizer to use, you can choose between `adam` (for ADAM) and `rmsprop` for (Alex Graves’s RMSprop).
+ * `iteration`: Int, number of iterations to run.
+ * `lr`: Float. Learning rate of the optimizer.
+ * `save`: Int. The optimizer will write an output to file after every `save` iterations.
+ * `filename`: String. Prefix of filename when saving output. The saved files will have name in format `prefix_iterations`.
 * `contrast`: Boolean. Sometimes the output has less saturation than expected, so I insert few lines to give the contrast a kick when saving to file.
 
 
