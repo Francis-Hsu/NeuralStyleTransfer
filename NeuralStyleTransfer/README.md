@@ -25,19 +25,17 @@ A helper function `generate_image()` was created to help the transfer. The param
 ## Result
 under construction ᕕ( ᐛ )ᕗ
 
-![grainger](Result/grainger2.jpg)
-![the_shipwreck_of_the_minotaur](Result/the_shipwreck_of_the_minotaur.png)
-![starry_night](Result/starry_night.png)
-![der_schrei](Result/der_schrei.png)
-![femme_nue_assise](Result/femme_nue_assise.png)
-![composition_VII](Result/composition_VII.png)
-![xishan_qingyuan](Result/xishan_qingyuan.png)
-![kanagawa-oki_nami_ura](Result/kanagawa-oki_nami_ura.png)
+|||
+|:-------------------------:|:-------------------------:|
+|![grainger](Result/grainger2.jpg) | ![the_shipwreck_of_the_minotaur](Result/the_shipwreck_of_the_minotaur.png)|
+|![starry_night](Result/starry_night.png) | ![der_schrei](Result/der_schrei.png)|
+|![femme_nue_assise](Result/femme_nue_assise.png) | ![composition_VII](Result/composition_VII.png)|
+|![xishan_qingyuan](Result/xishan_qingyuan.png) | ![kanagawa-oki_nami_ura](Result/kanagawa-oki_nami_ura.png)|
 
 ### Color Preserving Transfer
-![starry_night_over_the_rhone](Result/starry_night_over_the_rhone.png)
-![histogram](Result/color_histogram.png)
-![luminance](Result/color_luminance.png)
+||||
+|:-------------------------:|:-------------------------:|:-------------------------:|
+|![starry_night_over_the_rhone](Result/starry_night_over_the_rhone.png)|![histogram](Result/color_histogram.png)|![luminance](Result/color_luminance.png)|
 
 
 ## Reference
@@ -50,7 +48,7 @@ Leon A. Gatys, Alexander S. Ecker, Matthias Bethge, Aaron Hertzmann & Eli Shecht
 Gatys, Leon A., Ecker, Alexander S. & Bethge, Matthias (2016). [*Image Style Transfer Using Convolutional Neural Networks*](http://www.cv-foundation.org/openaccess/content_cvpr_2016/html/Gatys_Image_Style_Transfer_CVPR_2016_paper.html). In: *The IEEE Conference on Computer Vision and Pattern Recognition*, pp. 2414-2423.
 
 ## Acknowledgement
-In making this program, I referred to helpful work of [jcjohnson](https://github.com/jcjohnson/neural-style), [apple2373](https://github.com/apple2373/chainer_stylenet), [mattya](https://github.com/mattya/chainer-gogh), and [andersbll](https://github.com/andersbll/neural_artistic_style).
+In making this program, I referred to helpful works of [jcjohnson](https://github.com/jcjohnson/neural-style), [apple2373](https://github.com/apple2373/chainer_stylenet), [mattya](https://github.com/mattya/chainer-gogh), and [andersbll](https://github.com/andersbll/neural_artistic_style).
  
 ## Author
 Francis Hsu, University of Illinois at Urbana–Champaign.
