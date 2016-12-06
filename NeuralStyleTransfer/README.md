@@ -11,8 +11,8 @@ With minor modifications, other CNNs (NIN, GoogLeNet, etc.) can be used as well.
 A helper function `generate_image()` was created to help the transfer. The parameters it uses are:
 * `cnn`:
 * `content`, `style`:
-* `alpha`, `beta`:
-* `color`: 
+* `alpha`, `beta`: Float. Weighting factors for content and style reconstruction, respectively.
+* `color`: String. Scheme of color preserving to use, choose between `none` (no color preserving), `historgram` (for histogram matching), and `luminance` (for luminance-only transfer). 
 * `init_image`:
 * `optimizer`: String. Optimizer to use, you can choose between `adam` (for ADAM) and `rmsprop` for (Alex Graves’s RMSprop).
  * `iteration`: Int, number of iterations to run.
