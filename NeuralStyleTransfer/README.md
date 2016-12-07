@@ -1,19 +1,20 @@
 ## Description
-An [Chainer](http://chainer.org/) implementation of *A Neural Algorithm of Artistic Style*. In short, this is an algorithm that transfers the artistic style of one image onto another by utilizing  convolutional neural networks' ability to extract high-level image content.
+A [Chainer](http://chainer.org/) implementation of *A Neural Algorithm of Artistic Style*. In short, this is an algorithm that transfers the artistic style of one image onto another with the help from a convolutional neural network.
 
 ## Detail
 ### Pre-trained model
 A VGG-19 Caffe model is required for this implementation  to work. You can use the normalized version used by the authors of the article: [`vgg_normalised.caffemodel`](http://bethgelab.org/deeptextures/), or use the original one made by VGG team: [`VGG_ILSVRC_19_layers.caffemodel`](https://gist.github.com/ksimonyan/3785162f95cd2d5fee77#file-readme-md).
 
-With minor modifications, other CNNs (NIN, GoogLeNet, etc.) can be used as well. See [jcjohnson's explanation](https://github.com/jcjohnson/neural-style) and [mattya's implementation](https://github.com/mattya/chainer-gogh/blob/master/models.py).
+With minor modifications, other CNNs (e.g. NIN, GoogLeNet) can be used as well. See [jcjohnson's explanation](https://github.com/jcjohnson/neural-style) and [mattya's implementation](https://github.com/mattya/chainer-gogh/blob/master/models.py).
 
 ### Parameters
 A helper function `generate_image()` was created to help the transfer. The parameters it uses are:
-* `cnn`:
-* `content`, `style`:
-* `alpha`, `beta`: Float. Weighting factors for content and style reconstruction, respectively.
-* `color`: String. Scheme of color preserving to use, choose between `none` (no color preserving), `historgram` (for histogram matching), and `luminance` (for luminance-only transfer). 
-* `init_image`:
+* `cnn`: A CNN model object. Currently only VGG19 is implemented.
+* `content`, `style`: Strings. Filenames for the content and style images to use.
+* `alpha`, `beta`: Floats. Weighting factors for content and style reconstruction, respectively.
+* `color`: String. Scheme of color preserving to use, choose between `none` (no color preserving), `historgram` (for histogram matching), and `luminance` (for luminance-only transfer).
+ * `a`: Boolean. Whether to match the luminance channel of the style image to the content image before transfering, only work if `color` is `luminance` of course.
+* `init_image`: String. Choose between `noise`, `content`, and `style`. 
 * `optimizer`: String. Optimizer to use, you can choose between `adam` (for ADAM) and `rmsprop` for (Alex Graves’s RMSprop).
  * `iteration`: Int, number of iterations to run.
  * `lr`: Float. Learning rate of the optimizer.
