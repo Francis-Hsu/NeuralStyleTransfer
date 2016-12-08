@@ -2,10 +2,15 @@
 A [Chainer](http://chainer.org/) implementation of *A Neural Algorithm of Artistic Style*. In short, this is an algorithm that transfers the artistic style of one image onto another with the help from a convolutional neural network.
 
 ## Detail
-### Pre-trained model
+### Requirement
+Code tested with Chainer v1.14.0 and v1.18.0.
+
 A VGG-19 Caffe model is required for this implementation  to work. You can use the normalized version used by the authors of the article: [`vgg_normalised.caffemodel`](http://bethgelab.org/deeptextures/), or use the original one made by VGG team: [`VGG_ILSVRC_19_layers.caffemodel`](https://gist.github.com/ksimonyan/3785162f95cd2d5fee77#file-readme-md).
 
 With minor modifications, other CNNs (e.g. NIN, GoogLeNet) can be used as well. See [jcjohnson's explanation](https://github.com/jcjohnson/neural-style) and [mattya's implementation](https://github.com/mattya/chainer-gogh/blob/master/models.py).
+
+### Usage
+under construction ᕕ( ᐛ )ᕗ
 
 ### Parameters
 A helper function `generate_image()` was created to help the transfer. The parameters it uses are:
@@ -31,9 +36,10 @@ under construction ᕕ( ᐛ )ᕗ
 |![grainger](Result/grainger2.jpg) | ![the_shipwreck_of_the_minotaur](Result/the_shipwreck_of_the_minotaur.png)|
 |![starry_night](Result/starry_night.png) | ![der_schrei](Result/der_schrei.png)|
 |![femme_nue_assise](Result/femme_nue_assise.png) | ![composition_VII](Result/composition_VII.png)|
-|![xishan_qingyuan](Result/xishan_qingyuan.png) | ![kanagawa-oki_nami_ura](Result/kanagawa-oki_nami_ura.png)|
+|![dreamland_of_mountain_chingcherng_in_heavenly_place](Result/dreamland_of_mountain_chingcherng_in_heavenly_place.png) | ![kanagawa-oki_nami_ura](Result/kanagawa-oki_nami_ura.png)|
 
 ### Color Preserving Transfer
+under construction ᕕ( ᐛ )ᕗ
 ||||
 |:-------------------------:|:-------------------------:|:-------------------------:|
 |![starry_night_over_the_rhone](Result/starry_night_over_the_rhone.png)|![histogram](Result/color_histogram.png)|![luminance](Result/color_luminance.png)|
