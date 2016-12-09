@@ -1,3 +1,4 @@
+#NeuralStyleTransfer
 ## Description
 A [Chainer](http://chainer.org/) implementation of *A Neural Algorithm of Artistic Style*. In short, this is an algorithm that transfers the artistic style of one image onto another with the help from a convolutional neural network.
 
@@ -14,10 +15,10 @@ A VGG-19 Caffe model is also required for this implementation  to work. You can 
 With minor modifications, other CNNs (e.g. NIN, GoogLeNet) can be used as well. See [jcjohnson's explanation](https://github.com/jcjohnson/neural-style) and [mattya's implementation](https://github.com/mattya/chainer-gogh/blob/master/models.py).
 
 ### Usage
-A helper function `generate_image()` was created to help the transfer. Simply call it in `main()` to generate images. An example is given below:
+A helper function `generate_image()` was created to do the transfer. Simply call it in `main()` to generate images. An example is given below:
 ```
 def main():
-    # set up global gpu flag
+    # set up global flag to run this program on gpu
     use_gpu(True)
     
     # instantiate a VGG19 model object
@@ -31,8 +32,8 @@ def main():
 ### Parameters
 The parameters `generate_image()` uses are:
 * `cnn`: A CNN model object. Currently only VGG19 is implemented.
-* `content`, `style`: Strings. Filenames for the content and style images to use.
-* `alpha`, `beta`: Floats. Weighting factors for content and style reconstruction, respectively.
+* `content`, `style`: Strings. Filenames of the content and style images to use.
+* `alpha`, `beta`: Floats. Weighting factors for content and style reconstruction.
 * `color`: String. Scheme of color preserving to use, choose between `none` (no color preserving), `historgram` (for histogram matching), and `luminance` (for luminance-only transfer).
  * `a`: Boolean. Whether to match the luminance channel of the style image to the content image before transfering, only work if `color` is `luminance` of course.
 * `init_image`: String. Choose between `noise`, `content`, and `style`. 
@@ -62,7 +63,7 @@ under construction ᕕ( ᐛ )ᕗ
 |![starry_night_over_the_rhone](Result/starry_night_over_the_rhone.png) | ![histogram](Result/hist.png)|
 |Transfer without Color Preserving | Transfer with histogram matching|
 |![lum_match](Result/lum_match.png) | ![lum_no_match](Result/lum_no_match.png)|
-|Luminance only transfer, histogram matched | Luminance only transfer|
+|Luminance-only transfer, histogram matched | Luminance-only transfer|
 
 
 ## Reference
