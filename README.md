@@ -37,16 +37,16 @@ The parameters `generate_image()` uses are:
 * `color`: String. Scheme of color preserving to use, choose between `none` (no color preserving), `historgram` (for histogram matching), and `luminance` (for luminance-only transfer).
  * `a`: Boolean. Whether to match the luminance channel of the style image to the content image before transfering, only work if `color` is `luminance` of course.
 * `init_image`: String. Choose between `noise`, `content`, and `style`. 
-* `optimizer`: String. Optimizer to use, you can choose between `adam` (for ADAM) and `rmsprop` for (Alex Graves’s RMSprop).
+* `optimizer`: String. Optimizer to use, you can choose between `adam` (ADAM) and `rmsprop` (Alex Graves’s RMSprop).
  * `iteration`: Int, number of iterations to run.
  * `lr`: Float. Learning rate of the optimizer.
  * `save`: Int. The optimizer will write an output to file after every `save` iterations.
  * `filename`: String. Prefix of filename when saving output. The saved files will have name in format `prefix_iterations`.
-* `contrast`: Boolean. Sometimes the output has less saturation than expected, so I insert few lines to give the contrast a kick when saving to file.
+* `contrast`: Boolean. Wether to boost the contrast when saving the output. Default to `True`. Sometimes the output has less saturation than expected, so I insert few lines to give the contrast a kick when saving to file.
 
 
 ## Result
-Here we demostrate the effect of transformation using a photo ([original file](https://www.flickr.com/photos/146483745@N03/30576915033/in/dateposted-public/)) of Grainger Engineering Library at UIUC.
+Here we demostrate the effect of transformation using a photo ([original file](https://www.flickr.com/photos/146483745@N03/30576915033/in/dateposted-public/)) of Grainger Engineering Library at UIUC. Titles of the artwork we used are also given:
 
 |||
 |:-------------------------:|:-------------------------:|
