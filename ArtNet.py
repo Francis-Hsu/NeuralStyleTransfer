@@ -1,6 +1,6 @@
 import numpy as np
 import scipy as sp
-from scipy import misc
+from scipy import misc, interpolate
 import time
 
 from chainer import cuda, optimizers, Variable
@@ -134,7 +134,7 @@ class ArtNN:
         return total_loss
 
     def optimize_adam(self, init_img, alpha=0.5, beta1=0.9, beta2=0.999, eps=1e-8,
-                      norm_grad=True, iterations=2000, save=50, filename='iter', str_contrast=False):
+                      iterations=2000, save=50, filename='iter', str_contrast=False):
         chainer_adam = optimizers.Adam(alpha=alpha, beta1=beta1, beta2=beta2, eps=eps)
         chainer_adam.t = 0
         state = {'m': xp.zeros_like(init_img.data), 'v': xp.zeros_like(init_img.data)}
@@ -149,9 +149,8 @@ class ArtNN:
             loss.unchain_backward()
 
             # normalize gradient
-            if norm_grad:
-                grad_l1_norm = xp.sum(xp.absolute(init_img.grad * init_img.grad))
-                init_img.grad /= grad_l1_norm
+            grad_l1_norm = xp.sum(xp.absolute(init_img.grad * init_img.grad))
+            init_img.grad /= grad_l1_norm
 
             if gpu_flag:
                 chainer_adam.update_one_gpu(init_img, state)
@@ -163,7 +162,10 @@ class ArtNN:
             # save image every 'save' iteration
             if save != 0 and (epoch + 1) % save == 0:
                 if self.preserve_color:
-                    out_img.copydata(init_img + self.content_img_chr)
+                    init_img_lum = separate_lum_chr(init_img)[0]
+                    if gpu_flag:
+                        init_img_lum.to_gpu()
+                    out_img.copydata(init_img_lum + self.content_img_chr)
                 else:
                     out_img.copydata(init_img)
                 save_image(out_img, filename + '_' + str(epoch + 1) + '.png', contrast=str_contrast)
@@ -171,7 +173,7 @@ class ArtNN:
                       ((epoch + 1), (time.time() - time_start), loss.data))
 
     def optimize_rmsprop(self, init_img, lr=0.1, alpha=0.95, momentum=0.9, eps=1e-4,
-                         norm_grad=True, iterations=2000, save=50, filename='iter', str_contrast=False):
+                         iterations=2000, save=50, filename='iter', str_contrast=False):
         chainer_rms = optimizers.RMSpropGraves(lr=lr, alpha=alpha, momentum=momentum, eps=eps)
         state = {'n': xp.zeros_like(init_img.data), 'g': xp.zeros_like(init_img.data),
                  'delta': xp.zeros_like(init_img.data)}
@@ -184,9 +186,8 @@ class ArtNN:
             loss.unchain_backward()
 
             # normalize gradient
-            if norm_grad:
-                grad_l1_norm = xp.sum(xp.absolute(init_img.grad * init_img.grad))
-                init_img.grad /= grad_l1_norm
+            grad_l1_norm = xp.sum(xp.absolute(init_img.grad * init_img.grad))
+            init_img.grad /= grad_l1_norm
 
             if gpu_flag:
                 chainer_rms.update_one_gpu(init_img, state)
@@ -198,7 +199,10 @@ class ArtNN:
             # save image every 'save' iteration
             if save != 0 and (epoch + 1) % save == 0:
                 if self.preserve_color:
-                    out_img.copydata(init_img + self.content_img_chr)
+                    init_img_lum = separate_lum_chr(init_img)[0]
+                    if gpu_flag:
+                        init_img_lum.to_gpu()
+                    out_img.copydata(init_img_lum + self.content_img_chr)
                 else:
                     out_img.copydata(init_img)
                 save_image(out_img, filename + '_' + str(epoch + 1) + '.png', contrast=str_contrast)
@@ -206,7 +210,7 @@ class ArtNN:
                       ((epoch + 1), (time.time() - time_start), loss.data))
 
 
-# rescale an array to [0, 1]
+# rescale an array to [0, 255]
 def normalize(data):
     n_data = (data - data.min()) / (data.max() - data.min())
 
@@ -230,7 +234,7 @@ def rgb_to_yiq(rgb_img):
 
 # convert YIQ to RGB
 def yiq_to_rgb(yiq_img):
-    rgb_mat = np.array([[1.000, 0.956, 0.621], [1.000, -0.272, -0.647], [1.000, -1.106, 1.703]])
+    rgb_mat = np.array([[1.000, 0.956, 0.621], [1.000, -0.273, -0.647], [1.000, -1.104, 1.701]])
     rgb_img = np.dot(yiq_img, rgb_mat.T).astype(np.float32)
 
     # normalize to [0, 255]
@@ -258,61 +262,56 @@ def separate_lum_chr(gen_img_cvar):
     gen_img_chr = gen_img_chr[..., ::-1]
 
     # convert to Chainer Variables
-    if gpu_flag:
-        gen_img_lum = Variable(cuda.to_gpu(gen_img_lum))
-        gen_img_chr = Variable(cuda.to_gpu(gen_img_chr))
-    else:
-        gen_img_lum = Variable(gen_img_lum)
-        gen_img_chr = Variable(gen_img_chr)
+    gen_img_lum = Variable(gen_img_lum)
+    gen_img_chr = Variable(gen_img_chr)
 
     # transform images into bc01 arrangement
-    gen_img_lum = F.rollaxis(gen_img_lum, 2, 0)[xp.newaxis, ...]
-    gen_img_chr = F.rollaxis(gen_img_chr, 2, 0)[xp.newaxis, ...]
+    gen_img_lum = F.rollaxis(gen_img_lum, 2, 0)[np.newaxis, ...]
+    gen_img_chr = F.rollaxis(gen_img_chr, 2, 0)[np.newaxis, ...]
 
     return gen_img_lum, gen_img_chr
 
 
-# match two images using the Image Analogies color transfer
-def color_match(cont_img_cvar, sty_img_cvar):
+# match two images using the Monge-Kantorovitch transform
+def histogram_match(cont_img_cvar, sty_img_cvar):
     cont_img = cont_img_cvar.data.copy()
     sty_img = sty_img_cvar.data.copy()
-    if gpu_flag:
-        cont_img = xp.asnumpy(cont_img)
-        sty_img = xp.asnumpy(sty_img)
 
     # roll back to standard arrangement
     cont_img = np.rollaxis(np.squeeze(cont_img, 0), 0, 3)
     sty_img = np.rollaxis(np.squeeze(sty_img, 0), 0, 3)
 
+    # compute row means
+    cont_mu = np.mean(cont_img, axis=(0, 1))
+    sty_mu = np.mean(sty_img, axis=(0, 1))
+
     # compute covariance matrix
-    cont_sigma = np.cov(np.concatenate(cont_img), rowvar=False)
-    sty_sigma = np.cov(np.concatenate(sty_img), rowvar=False)
+    cont_sigma = np.cov(np.concatenate(cont_img), rowvar=False, bias=True)
+    sty_sigma = np.cov(np.concatenate(sty_img), rowvar=False, bias=True)
 
-    # eigendecomposition
-    cont_q, cont_l = sp.linalg.eig(cont_sigma)
-    cont_q = sp.linalg.sqrtm(np.diag(cont_q)).real
-    cont_sigma_sqrtm = cont_l.dot(cont_q).dot(cont_l.T)
-
+    # eigendecomposition for square roots
     sty_q, sty_l = sp.linalg.eig(sty_sigma)
-    sty_q = sp.linalg.sqrtm(np.diag(sty_q)).real
+    sty_q = np.diag(np.sqrt(sty_q))
     sty_sigma_sqrtm = sty_l.dot(sty_q).dot(sty_l.T)
+    sty_sigma_sqrtm_inv = np.linalg.inv(sty_sigma_sqrtm)
+
+    cont_sty_cov = sty_sigma_sqrtm.dot(cont_sigma).dot(sty_sigma_sqrtm)
+    cs_q, cs_l = sp.linalg.eig(cont_sty_cov)
+    cs_q = np.diag(np.sqrt(cs_q))
+    cs_sqrtm = cs_l.dot(cs_q).dot(cs_l.T)
 
     # color matching transformation
-    a = np.dot(cont_sigma_sqrtm, np.linalg.inv(sty_sigma_sqrtm))
-    b = np.mean(cont_img, axis=(0, 1)) - np.dot(a, np.mean(sty_img, axis=(0, 1)))
-    sty_img_col = np.add(np.dot(sty_img, a.T), b).astype(np.float32)
+    a = sty_sigma_sqrtm_inv.dot(cs_sqrtm).dot(sty_sigma_sqrtm_inv)
+    sty_img_col = np.add(np.dot(sty_img - sty_mu, a.T), cont_mu).real
 
     # normalize
-    sty_img_col = 255.0 * normalize(sty_img_col)
+    sty_img_col = np.ceil(255.0 * normalize(sty_img_col))
 
-    # convert to Chainer Variables
-    if gpu_flag:
-        sty_img_cm_cvar = Variable(cuda.to_gpu(sty_img_col))
-    else:
-        sty_img_cm_cvar = Variable(sty_img_col)
+    # convert to a Chainer Variables
+    sty_img_cm_cvar = Variable(sty_img_col)
 
     # transform image back to bc01
-    sty_img_cm_cvar = F.rollaxis(sty_img_cm_cvar, 2, 0)[xp.newaxis, ...]
+    sty_img_cm_cvar = F.rollaxis(sty_img_cm_cvar, 2, 0)[np.newaxis, ...]
 
     return sty_img_cm_cvar
 
@@ -328,13 +327,9 @@ def load_images(content_name, style_name):
     content_img = content_img[..., ::-1]
     style_img = style_img[..., ::-1]
 
-    # convert to Chainer Variable
-    if gpu_flag:
-        content_img = Variable(cuda.to_gpu(content_img))
-        style_img = Variable(cuda.to_gpu(style_img))
-    else:
-        content_img = Variable(content_img)
-        style_img = Variable(style_img)
+    # convert to Chainer Variables
+    content_img = Variable(content_img)
+    style_img = Variable(style_img)
 
     # transform loaded images into bc01 arrangement
     content_img = F.rollaxis(content_img, 2, 0)[np.newaxis, ...]
@@ -347,7 +342,6 @@ def load_images(content_name, style_name):
 # gen_rep - a Chainer Variable
 # filename - a string
 def save_image(gen_rep, filename, contrast=False):
-    # for original VGG mean_pixel (BGR) should be subtracted
     mean_pixel = np.array([103.939, 116.779, 123.680]).astype(np.float32)
 
     out_img = gen_rep.data.copy()
@@ -366,8 +360,8 @@ def save_image(gen_rep, filename, contrast=False):
         imin, imax = np.percentile(out_img, (1, 99))
         out_img = np.clip(out_img, imin, imax)
 
-    # normalize
-    out_img = normalize(out_img)
+    # normalize to [0, 255]
+    out_img = 255.0 * normalize(out_img)
 
     sp.misc.imsave(filename, out_img, 'png')
 
@@ -391,11 +385,7 @@ def mean_subtraction(img_cvar):
 
     temp_img -= mean_pixel
 
-    if gpu_flag:
-        temp_cvar = Variable(cuda.to_gpu(temp_img))
-    else:
-        temp_cvar = Variable(temp_img)
-
+    temp_cvar = Variable(temp_img)
     temp_cvar = F.rollaxis(temp_cvar, 2, 0)[np.newaxis, ...]
 
     return temp_cvar
@@ -415,42 +405,38 @@ def use_gpu(gpu=True):
 
 
 # helper function for synthesizing image
-def generate_image(cnn, content, style, alpha=80.0, beta=1000.0, color='none', lum_match=True, init_image='noise',
-                   optimizer='adam', iteration=2000, lr=0.1, save=50, prefix='iter', contrast=False):
+def generate_image(cnn, content, style, alpha=150.0, beta=10000.0, color='none', lum_match=True, init_image='noise',
+                   optimizer='adam', iteration=1500, lr=0.15, save=50, prefix='temp', contrast=True):
     # load images
     content_img, style_img = load_images(content, style)
-    content_img_chr = 0
+    content_img_chr = Variable(xp.zeros_like(content_img.data))
 
     # choose color preserving scheme
     color_flag = False
     if color != 'none':
         if color == 'histogram':
-            style_img.copydata(color_match(content_img, style_img))
-        # if choose luminance scheme, save the luminance and chrominance channels
+            style_img.copydata(histogram_match(content_img, style_img))
         elif color == 'luminance':
             color_flag = True
             content_img_lum, content_img_chr = separate_lum_chr(content_img)
-            style_img_lum, style_img_chr = separate_lum_chr(style_img)
-            if lum_match:
-                # luminance match
-                std_c = content_img_lum.data.std()
-                std_s = style_img_lum.data.std()
-
-                mu_c = content_img_lum.data.mean()
-                mu_s = style_img_lum.data.mean()
-
-                style_img_lum.data *= std_c / std_s
-                style_img_lum.data += mu_c - (std_c / std_s) * mu_s
-
-            content_img.copydata(content_img_lum)
-            style_img.copydata(style_img_lum)
             content_img_chr = mean_subtraction(content_img_chr)
+            if lum_match:
+                style_img_lum, style_img_chr = separate_lum_chr(style_img)
+                style_img_lum.copydata(histogram_match(content_img_lum, style_img_lum))
+                style_img_temp = style_img_lum + style_img_chr
+                style_img_temp.data = 255.0 * normalize(style_img_temp.data)
+                style_img.copydata(style_img_temp)
         else:
             return
 
     # subtract means before passing
     content_img = mean_subtraction(content_img)
     style_img = mean_subtraction(style_img)
+
+    if gpu_flag:
+        content_img.to_gpu()
+        style_img.to_gpu()
+        content_img_chr.to_gpu()
 
     # instantiation
     print("\nInitializing...")
@@ -469,18 +455,16 @@ def generate_image(cnn, content, style, alpha=80.0, beta=1000.0, color='none', l
     else:
         return
 
+    x = Variable(x)
     if gpu_flag:
-        x = Variable(cuda.to_gpu(x))
-    else:
-        x = Variable(x)
+        x.to_gpu()
 
     # generate image
     print("\nContent Image: " + content)
     print("  Style Image: " + style)
 
     print("\nSynthesizing...")
-    init_loss = art_nn.loss_total(x).data
-    print("Initial Loss: %.6f" % init_loss)
+    print("Initial Loss: %.4f" % art_nn.loss_total(x).data)
     start_time_1 = time.time()
 
     # choose optimizer
@@ -491,18 +475,16 @@ def generate_image(cnn, content, style, alpha=80.0, beta=1000.0, color='none', l
     else:
         return
 
-    print("Done. Time Used: %.2f" % (time.time() - start_time_1))
-    end_loss = art_nn.loss_total(x).data
-    print("End Loss: %.6f" % end_loss)
+    print("Done. Total Time Used: %.2f" % (time.time() - start_time_1))
+    print("End Loss: %.4f" % art_nn.loss_total(x).data)
 
 
 def main():
     use_gpu(True)
     cnn = VGG19()
 
-    generate_image(cnn, 'a.jpg', 'b.jpg', alpha=60, beta=10000,
-                   init_image='noise', optimizer='rmsprop', iteration=1600, lr=0.25, prefix='temp', contrast=True)
-
+    generate_image(cnn, 'content.jpg', 'style.jpg', alpha=150.0, beta=12000.0,
+                   init_image='noise', optimizer='rmsprop', iteration=1600, lr=0.25, prefix='temp')
 
 if __name__ == "__main__":
     main()
