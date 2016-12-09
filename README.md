@@ -46,14 +46,18 @@ The parameters `generate_image()` uses are:
 
 
 ## Result
-under construction ᕕ( ᐛ )ᕗ
+Here we demostrate the effect of transformation using a photo ([original file](https://www.flickr.com/photos/146483745@N03/30576915033/in/dateposted-public/)) of Grainger Engineering Library at UIUC.
 
 |||
 |:-------------------------:|:-------------------------:|
 |![grainger](Result/grainger2.jpg) | ![the_shipwreck_of_the_minotaur](Result/the_shipwreck_of_the_minotaur.png)|
+|Original Image | The Shipwreck of the Minotaur |
 |![starry_night](Result/starry_night.png) | ![der_schrei](Result/der_schrei.png)|
+|De Sterrennacht | Der Schrei|
 |![femme_nue_assise](Result/femme_nue_assise.png) | ![composition_VII](Result/composition_VII.png)|
+|Femme Nue Assise | Композиция 7|
 |![dreamland_of_mountain_chingcherng_in_heavenly_place](Result/dreamland_of_mountain_chingcherng_in_heavenly_place.png) | ![kanagawa-oki_nami_ura](Result/kanagawa-oki_nami_ura.png)|
+|夢入靑城天下幽人間仙境圖|神奈川沖浪裏|
 
 ### Color Preserving Transfer
 under construction ᕕ( ᐛ )ᕗ
