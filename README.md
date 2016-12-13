@@ -71,7 +71,7 @@ under construction ᕕ( ᐛ )ᕗ
 
 
 ## Reference
-Leon A. Gatys, S. Ecker & Matthias Bethge (2015). [*A Neural Algorithm of Artistic Style*](http://arxiv.org/abs/1508.06576). In: *CoRR*.
+Leon A. Gatys, Alexander S. Ecker & Matthias Bethge (2015). [*A Neural Algorithm of Artistic Style*](http://arxiv.org/abs/1508.06576). In: *CoRR*.
 
 Leon A. Gatys, Matthias Bethge, Aaron Hertzmann & Eli Shechtman (2016). [*Preserving Color in Neural Artistic Style Transfer*](http://arxiv.org/abs/1606.05897). In: *CoRR*.
 
