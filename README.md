@@ -1,4 +1,4 @@
-#NeuralStyleTransfer
+# NeuralStyleTransfer
 ## Description
 A [Chainer](http://chainer.org/) implementation of *A Neural Algorithm of Artistic Style*. In short, this is an algorithm that transfers the artistic style of one image onto another with the help from a convolutional neural network.
 
