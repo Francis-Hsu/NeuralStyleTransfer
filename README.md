@@ -82,7 +82,7 @@ Gatys, Leon A., Ecker, Alexander S. & Bethge, Matthias (2016). [*Image Style Tra
 F. Pitie & A. Kokaram (2007). [*The linear Monge-Kantorovitch linear colour mapping for example-based colour transfer*](http://dx.doi.org/10.1049/cp:20070055). In: *IETCVMP. 4th European Conference on Visual Media Production, 2007*, pp. 1-9.
 
 ## Acknowledgement
-In making this program, I referred to helpful works of [jcjohnson](https://github.com/jcjohnson/neural-style), [apple2373](https://github.com/apple2373/chainer_stylenet), [mattya](https://github.com/mattya/chainer-gogh), and [andersbll](https://github.com/andersbll/neural_artistic_style).
+In making of this program, I referred to the helpful works from [jcjohnson](https://github.com/jcjohnson/neural-style), [apple2373](https://github.com/apple2373/chainer_stylenet), [mattya](https://github.com/mattya/chainer-gogh), and [andersbll](https://github.com/andersbll/neural_artistic_style).
  
 ## Author
 Francis Hsu, University of Illinois at Urbana–Champaign.
